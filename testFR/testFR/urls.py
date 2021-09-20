@@ -6,6 +6,11 @@ router = routers.DefaultRouter()
 
 router.register(r'users', views.UserViewSet)
 router.register(r'groups', views.GroupViewSet)
+router.register(r'questions', views.QuestionViewSet)
+router.register(r'answer-options', views.AnswerOptionViewSet)
+router.register(r'answers', views.AnswerViewSet)
+router.register(r'polls', views.PollDetail, basename='poll')
+router.register(r'polls', views.PollList, basename='poll')
 
 urlpatterns = [
     url(r'^', include(router.urls)),
