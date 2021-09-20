@@ -34,4 +34,4 @@ class AnswerSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = Answer
 		fields = ('url', 'text', 'variants', 'user', 'question')
-		read_only_fields = ('user')
+		read_only_fields = ('user',)

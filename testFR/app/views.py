@@ -12,7 +12,9 @@ from rest_framework.response import Response
 from app.serializers import (UserSerializer, PollSerializer, 
     AnswerOptionSerializer, AnswerSerializer, QuestionSerializer, GroupSerializer)
 from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.exceptions import ValidationError
 from app.permissions import *
+
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -29,30 +31,19 @@ class GroupViewSet(viewsets.ModelViewSet):
     serializer_class = GroupSerializer
 
 
-class PollList(viewsets.ViewSet):
-    def get(self, request):
+
+class PollViewSet(viewsets.ModelViewSet):
+    def get_queryset(self):
         user_is_admin = False
         queryset = Poll.objects.all()
-        if isinstance(request.user, AnonymousUser):
+        if isinstance(self.request.user, AnonymousUser):
             user_is_admin = False
         else:
-            user_is_admin = 'admin' in map(str, request.user.groups.all())
+            user_is_admin = 'admin' in map(str, self.request.user.groups.all())
         if not user_is_admin:
-            queryset = queryset.filter(end_date__lte=datetime.now())
-        serializer = PollSerializer(queryset, many=True, context={'request': request})
-        return Response(serializer.data)
+            queryset = Poll.objects.filter(end_date__gte=datetime.now())
+        return queryset
 
-    def post(self, request, format=None):
-        serializer = PollSerializer(data=request.data)
-        if not 'admin' in map(str, request.user.groups.all()):
-            return Response(status=HTTP_403_FORBIDDEN)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class PollDetail(viewsets.ModelViewSet):
-    queryset = Poll.objects.all()
     serializer_class = PollSerializer
     permission_classes = [IsAdminOrReadOnly]
 
@@ -60,6 +51,7 @@ class PollDetail(viewsets.ModelViewSet):
 class AnswerOptionViewSet(viewsets.ModelViewSet):
     queryset = AnswerOption.objects.all()
     serializer_class = AnswerOptionSerializer
+    
 
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
@@ -68,3 +60,15 @@ class QuestionViewSet(viewsets.ModelViewSet):
 class AnswerViewSet(viewsets.ModelViewSet):
     queryset = Answer.objects.all()
     serializer_class = AnswerSerializer
+
+    def create(self, request):
+        serializer = AnswerSerializer(data=request.data, context={'request': request})
+        serializer.is_valid()
+        print('======================')
+        print(request.user.pk)
+        print('======================')
+        serializer.data.user = request.user
+        if serializer.is_valid():
+            serializer.save()
+            return serializer.data
+        raise ValidationError

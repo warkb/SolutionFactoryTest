@@ -9,8 +9,7 @@ router.register(r'groups', views.GroupViewSet)
 router.register(r'questions', views.QuestionViewSet)
 router.register(r'answer-options', views.AnswerOptionViewSet)
 router.register(r'answers', views.AnswerViewSet)
-router.register(r'polls', views.PollDetail, basename='poll')
-router.register(r'polls', views.PollList, basename='poll')
+router.register(r'polls', views.PollViewSet, basename='poll')
 
 urlpatterns = [
     url(r'^', include(router.urls)),
