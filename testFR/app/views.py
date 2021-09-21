@@ -64,11 +64,7 @@ class AnswerViewSet(viewsets.ModelViewSet):
     def create(self, request):
         serializer = AnswerSerializer(data=request.data, context={'request': request})
         serializer.is_valid()
-        print('======================')
-        print(request.user.pk)
-        print('======================')
-        serializer.data.user = request.user
         if serializer.is_valid():
-            serializer.save()
-            return serializer.data
+            serializer.save(user=request.user)
+            return Response(serializer.data)
         raise ValidationError
