@@ -3,10 +3,18 @@ from .models import Answer, AnswerOption, Poll, Question
 from rest_framework import serializers
 
 
+class AnswerSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Answer
+        fields = ('url', 'text', 'variants', 'user', 'question')
+        read_only_fields = ('user',)
+
 class UserSerializer(serializers.HyperlinkedModelSerializer):
+    answers = AnswerSerializer(many=True, read_only=True)
     class Meta:
         model = User
-        fields = ('url', 'username', 'email', 'groups')
+        fields = ('url', 'username', 'email', 'groups', 'answers')
+        read_only_fields = ('answers',)
 
 class GroupSerializer(serializers.HyperlinkedModelSerializer):
         class Meta:
@@ -29,9 +37,3 @@ class AnswerOptionSerializer(serializers.HyperlinkedModelSerializer):
 	class Meta:
 		model = AnswerOption
 		fields = ('url', 'variant', 'question')
-
-class AnswerSerializer(serializers.HyperlinkedModelSerializer):
-	class Meta:
-		model = Answer
-		fields = ('url', 'text', 'variants', 'user', 'question')
-		read_only_fields = ('user',)

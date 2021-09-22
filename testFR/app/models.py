@@ -28,5 +28,5 @@ class AnswerOption(models.Model):
 class Answer(models.Model):
 	text = models.CharField("Текст ответа", max_length=300, null=True, blank=True)
 	variants = models.ManyToManyField(AnswerOption, verbose_name='Выбранные варианты')
-	user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь',  null=True)
+	user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Пользователь',  null=True, related_name='answers')
 	question = models.ForeignKey(Question, on_delete=models.CASCADE, verbose_name='Вопрос')
