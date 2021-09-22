@@ -18,7 +18,7 @@ from app.permissions import *
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    permission_classes = [UserPermission]
+    permission_classes = [IsAdminOrReadOnly]
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
 
@@ -50,11 +50,13 @@ class PollViewSet(viewsets.ModelViewSet):
 class AnswerOptionViewSet(viewsets.ModelViewSet):
     queryset = AnswerOption.objects.all()
     serializer_class = AnswerOptionSerializer
+    permission_classes = [IsAdminOrReadOnly]
     
 
 class QuestionViewSet(viewsets.ModelViewSet):
     queryset = Question.objects.all()
     serializer_class = QuestionSerializer
+    permission_classes = [IsAdminOrReadOnly]
 
 class AnswerViewSet(viewsets.ModelViewSet):
     queryset = Answer.objects.all()
